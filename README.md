@@ -1,19 +1,19 @@
 Environment setup instructions: 
-    *1. Setup virtualbox:
-        a) Virtualbox setup: https://www.virtualbox.org/wiki/Mac%20OS%20X%20build%20instructions
-        b) Setup linux system - debian 9 (amd64): https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-9
+* Setup virtualbox:
+    * Virtualbox setup: https://www.virtualbox.org/wiki/Mac%20OS%20X%20build%20instructions
+    * Setup linux system - debian 9 (amd64): https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-9
     
-    2. Install UI + software: 
-        a) settings - storage - cd(empty) - "a cd icon next to the /optical/ drive": import amd64
-        b) setup (first two, last two ) (clicking page) - SSH gnome
-        c) ...
+* Install UI + software: 
+    * settings - storage - cd(empty) - "a cd icon next to the /optical/ drive": import amd64
+    * setup (first two, last two ) (clicking page) - SSH gnome
+    * ...
     
-    3. Install coding environment: 
-        a) python3: https://docs.python-guide.org/starting/install3/linux/
-        b) python flask: https://flask.palletsprojects.com/en/1.1.x/installation/
-        c) Visual studio code: https://linuxize.com/post/how-to-install-visual-studio-code-on-debian-9/
-        d) Mysql: https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-9  
-            Note: use mariadb if it showed "no installation canditate" https://unix.stackexchange.com/questions/270872/install-mysql-has-no-installation-candidate
+* Install coding environment: 
+    * python3: https://docs.python-guide.org/starting/install3/linux/
+    * python flask: https://flask.palletsprojects.com/en/1.1.x/installation/
+    * Visual studio code: https://linuxize.com/post/how-to-install-visual-studio-code-on-debian-9/
+    * Mysql: https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-9  
+        * Note: use mariadb if it showed "no installation canditate" https://unix.stackexchange.com/questions/270872/install-mysql-has-no-installation-candidate
     
     
     
