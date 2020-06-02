@@ -1,5 +1,5 @@
 Environment setup instructions: 
-    1. Setup virtualbox:
+    *1. Setup virtualbox:
         a) Virtualbox setup: https://www.virtualbox.org/wiki/Mac%20OS%20X%20build%20instructions
         b) Setup linux system - debian 9 (amd64): https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-9
     
