@@ -1,6 +1,11 @@
 from flask import Flask, request, jsonify, render_template
 import random
 import jwt
+
+import mysql.connector
+from mysql.connector import Error
+
+
 key = 'secret'
 
 
@@ -10,8 +15,10 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello World!'
 
-@app.route('/user', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
+    result = ""
+    status = "ERROR"
     if request.method == "GET":
         return jsonify({
             "User": "username",
@@ -22,38 +29,94 @@ def register():
         username = requestJson['Username']
         password = requestJson['Password']
         confirmation = requestJson['Confirm']
-        if password == confirmation:
-            encoded = jwt.encode({'some_x': 'payload_y'}, key, algorithm='HS256')
-            #store token (encoded)
-            return "Success"
-            """
-            return jsonify({
-                "User": username,
-                "Password": password
-            }) #ACID database (consistency)
-            """
-        else: 
-            return "Password does not match!"
+
+        cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+        cursor = cnx.cursor()
+        query = "SELECT * FROM users;"
+        cursor.execute(query)
         
-# Setup a mysql DB, 
-#return "success" / "Fail (reason)"
-# upload to github
-# save token to DB
+        print(password)
+        print(confirmation)
+        for (_, u, p, _,_,_) in cursor: 
+            if u == username:
+                if p == password: 
+                    result = "Account already exist."
+                    return jsonify(
+                        result = result,
+                        status = status
+                    )
+                else: 
+                    result = "Username has been taken."
+                    return jsonify(
+                        result = result,
+                        status = status
+                    )
+
+        if password == confirmation: 
+            """
+            #encoded = jwt.encode({'some_x': 'payload_y'}, key, algorithm='HS256')
+            # encode difference: encode, key, algorithm, (Update)
+            """
+            add_Data = "INSERT INTO users (username, password) VALUES ('" + username + "', '" + password + "');"
+            cursor.execute(add_Data)
+            result = "Succesfully registered"
+            status = "OK"
+            
+        else: 
+            result = "Password does not match"
+            
+        cnx.commit()    
+        cursor.close()
+        cnx.close()
+
+    return jsonify(
+        result = result,
+        status = status
+    )
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == "GET":
-        # if(requestJson['Username'] == username and requestJson['Password'] == password):
-            token = random.randint(100, 999)
-            return str(token)
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    result = "Fail"
+    requestJson = request.json
+    username = requestJson['Username']
+    password = requestJson['Password']
+    token = ""
+    if request.method == "POST":
+        cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+        cursor = cnx.cursor() 
+        query = "SELECT * FROM users WHERE username = '" + username + "' ;"
+        cursor.execute(query)
+        
+        for (_, u, p, _,_, t) in cursor: 
+            print(u)
+            print(p)
+            if p == password: 
+                encoded = jwt.encode({'some_x': 'payload_y'}, key, algorithm='HS256')
+                sql = "UPDATE users SET token = '" + encoded + "' WHERE username = '" + u + "';"
+                print(sql)
+                cursor.execute(sql) 
+                result = "Success"
+                token = encoded
+                break
+
+        cursor.close()
+        cnx.close()
+
+    return jsonify(
+        token = token,
+        status = "OK"
+    )
 
 
 
-"""
-@app.route('')
+
+@app.route('/upload', methods=['GET', 'POST'])
 def upload(): 
-"""
+    requestFile = request.files
+    if 
+
+
 
 
 if __name__ == '__name__':

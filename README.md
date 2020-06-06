@@ -10,10 +10,13 @@ Environment setup instructions:
     
 * Install coding environment: 
     * python3: https://docs.python-guide.org/starting/install3/linux/
+    * pip: https://www.tecmint.com/install-pip-in-linux/ 
     * python flask: https://flask.palletsprojects.com/en/1.1.x/installation/
     * Visual studio code: https://linuxize.com/post/how-to-install-visual-studio-code-on-debian-9/
     * Mysql: https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-9  
         * Note: use mariadb if it showed "no installation canditate" https://unix.stackexchange.com/questions/270872/install-mysql-has-no-installation-candidate
+    * token: https://pyjwt.readthedocs.io/en/latest/
+    * postman: https://linux4one.com/how-to-install-postman-in-linux/  
     
     
     
@@ -36,16 +39,15 @@ Database:
         *col-3* *datatype*
     );
 
+    create table users(
+        id INT(64) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) not null,
+        password VARCHAR(255) not null, 
+        date DATETIME,
+        ip VARCHAR(255),
+        token VARCHAR (255)
+    );
+    DESCRIBE users; 
 
 
-
-
-
-
-
-
-token 
-https://pyjwt.readthedocs.io/en/latest/ 
-
-postman
-auth
+mysql -h 34.67.158.25 -u frover -p
