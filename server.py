@@ -1,3 +1,4 @@
+
 import random
 import jwt
 import os
@@ -8,6 +9,8 @@ from mysql.connector import Error
 from datetime import datetime
 
 from werkzeug.utils import secure_filename
+
+import socket
 
 key = 'secret'
 
@@ -40,9 +43,7 @@ def register():
         query = "SELECT * FROM users;"
         cursor.execute(query)
         
-        print(password)
-        print(confirmation)
-        for (_, u, p, _,_,_) in cursor: 
+        for (_, u, p, _,_,_, _) in cursor: 
             if u == username:
                 if p == password: 
                     result = "Account already exist."
@@ -58,10 +59,6 @@ def register():
                     )
 
         if password == confirmation: 
-            """
-            #encoded = jwt.encode({'some_x': 'payload_y'}, key, algorithm='HS256')
-            # encode difference: encode, key, algorithm, (Update)
-            """
             add_Data = "INSERT INTO users (username, password) VALUES ('" + username + "', '" + password + "');"
             cursor.execute(add_Data)
             result = "Succesfully registered"
@@ -79,7 +76,6 @@ def register():
         status = status
     )
 
-
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     result = "Fail"
@@ -87,21 +83,44 @@ def signin():
     username = requestJson['Username']
     password = requestJson['Password']
     token = ""
+    tokenList = []
+    
+
     if request.method == "POST":
         cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
         cursor = cnx.cursor() 
         query = "SELECT * FROM users WHERE username = '" + username + "' ;"
         cursor.execute(query)
         
-        now = datetime.now()
-        for (_, u, p, t,_, _) in cursor: 
+        now = datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)")
+        for (_, u, p, t,_, _, tl) in cursor: 
             print(u)
             print(p)
             if p == password: 
+                """
+                #ip
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+                print(f"Hostname: {hostname}")
+                print(f"IP Address: {ip_address}")
+                """
+                
+
+                #sql, append token = token list
                 encoded = jwt.encode({"username": username, "timestamp": now}, key, algorithm='HS256')
-                sql = "UPDATE users SET token = '" + encoded + "' WHERE username = '" + u + "';"
-                print(sql)
-                cursor.execute(sql) 
+                
+                tlt = tl
+                if not tlt: 
+                    tlt = ""
+                setToken = "UPDATE users SET tokenList = '" + tlt + ";" + encoded + "' WHERE username = '" + u + "';"
+                
+                # setDate = "UPDATE users SET modified_time = CURRENT_TIMESTAMP WHERE username = '" + u + "';"
+                # setIp = "UPDATE users SET ip = '" + ip "' WHERE username = '" + u + "';"
+                # print(setIp)
+                cursor.execute(setToken) 
+                # cursor.execute(setDate)
+                #cursor.execute(setIp)
+                cnx.commit()
                 result = "Success"
                 token = encoded
                 break
@@ -111,7 +130,7 @@ def signin():
 
     return jsonify(
         token = token,
-        status = "OK"
+        status = result
     )
 
 
@@ -142,9 +161,10 @@ def upload():
     # Search user
     cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
     cursor = cnx.cursor() 
-    query = "SELECT username FROM users WHERE token = '" + token + "';"
+    # query = "SELECT username FROM users WHERE token = '" + token + "';"
+    query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
     cursor.execute(query)
-
+    
     count = 0 
     username = ""
     for u in cursor: 
@@ -185,12 +205,13 @@ def upload():
             filename = secure_filename(file.filename)
             file_path = os.path.join(usernamedir, filename)
             file.save(file_path)
+            
             status = "OK"
             return jsonify(
                 result = "File saved successfully.",
                 status = status
             )
-    
+
     return jsonify(
         status = status
     )
@@ -210,7 +231,7 @@ def getAllFiles():
     # get username
     cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
     cursor = cnx.cursor() 
-    query = "SELECT username FROM users WHERE token = '" + token + "';"
+    query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
     cursor.execute(query)
 
     count = 0 
@@ -236,7 +257,9 @@ def getAllFiles():
         #json list files
         usernamedir = os.path.join(UPLOAD_FOLDER, username)
         for filename in os.listdir(usernamedir):
-            file_list.append(os.path.join(usernamedir, filename))
+            mtime = os.path.getmtime(os.path.join(usernamedir,filename))
+            print(mtime)
+            file_list.append({"filename": filename, "mtime": mtime})
     
     status = "OK"
     return jsonify(
@@ -253,18 +276,16 @@ def download():
             status = status
         )
     token = request.headers["Authorization"][7:]
-    print(token)
 
     # get username
     cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
     cursor = cnx.cursor() 
-    query = "SELECT username FROM users WHERE token = '" + token + "';"
+    query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
     cursor.execute(query)
 
     count = 0 
     username = ""
     for u in cursor: 
-        print(u)
         count = count + 1
         username = u[0]
     if count < 1:
@@ -279,7 +300,6 @@ def download():
         )
 
     requestForm = request.form
-    # filename = requestJson['filename']
     if "filename" not in requestForm:
         return jsonify(
             result = "Filename not found.",
@@ -287,7 +307,6 @@ def download():
         )
     filename = requestForm['filename']
 
-    print(filename)
     if request.method == "GET":
         path = os.path.join(UPLOAD_FOLDER, username)
         return send_from_directory(path, filename, as_attachment=True)
@@ -308,18 +327,16 @@ def delete():
             status = status
         )
     token = request.headers["Authorization"][7:]
-    print(token)
 
     # get username
     cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
     cursor = cnx.cursor() 
-    query = "SELECT username FROM users WHERE token = '" + token + "';"
+    query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
     cursor.execute(query)
 
     count = 0 
     username = ""
     for u in cursor: 
-        print(u)
         count = count + 1
         username = u[0]
     if count < 1:
@@ -334,14 +351,13 @@ def delete():
         )
 
     requestForm = request.form
-    # filename = requestJson['filename']
     if "filename" not in requestForm:
         return jsonify(
             result = "Filename not found.",
             status = status
         )
-    filename = requestForm['filename']
 
+    filename = requestForm['filename']
     if request.method == "POST":
         remove_file = os.path.join(UPLOAD_FOLDER, username, filename)
         path = os.remove(remove_file)
