@@ -12,6 +12,8 @@ from werkzeug.utils import secure_filename
 
 import socket
 
+import argparse
+
 # key for token
 key = 'secret'
 
@@ -39,7 +41,7 @@ def register():
         confirmation = requestJson['Confirm']
 
         # connect to database "drive"
-        cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+        cnx = mysql.connector.connect(user="frover", password="frover", host="127.0.0.1", database="drive")
         cursor = cnx.cursor()
         # sql statement, select all users 
         query = "SELECT * FROM users;"
@@ -102,7 +104,7 @@ def signin():
 
     if request.method == "POST":
         # connect to database "drive"
-        cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+        cnx = mysql.connector.connect(user="frover", password="frover", host="127.0.0.1", database="drive")
         cursor = cnx.cursor() 
         # sql statement select specific user in database
         query = "SELECT * FROM users WHERE username = '" + username + "' ;"
@@ -160,7 +162,7 @@ def upload():
     token = request.headers["Authorization"][7:]
 
     # connect to database "drive"
-    cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+    cnx = mysql.connector.connect(user="frover", password="frover", host="127.0.0.1", database="drive")
     cursor = cnx.cursor() 
     # use token for every functions
     query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
@@ -237,7 +239,7 @@ def getAllFiles():
     token = request.headers["Authorization"][7:]
 
     # connect to database "drive"
-    cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+    cnx = mysql.connector.connect(user="frover", password="frover", host="127.0.0.1", database="drive")
     cursor = cnx.cursor() 
     # use token for every functions
     query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
@@ -292,7 +294,7 @@ def download():
     token = request.headers["Authorization"][7:]
 
     # connect to database "drive"
-    cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+    cnx = mysql.connector.connect(user="frover", password="frover", host="127.0.0.1", database="drive")
     cursor = cnx.cursor() 
     # use token for every functions
     query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
@@ -346,7 +348,7 @@ def delete():
     token = request.headers["Authorization"][7:]
 
     # get username
-    cnx = mysql.connector.connect(user="frover", password="frover", host="34.67.158.25", database="drive")
+    cnx = mysql.connector.connect(user="frover", password="frover", host="127.0.0.1", database="drive")
     cursor = cnx.cursor() 
     query = "SELECT username FROM users WHERE INSTR(tokenList, '" + token + "');"
     cursor.execute(query)

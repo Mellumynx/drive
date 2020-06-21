@@ -18,7 +18,7 @@ Environment setup instructions:
     * token: https://pyjwt.readthedocs.io/en/latest/
     * postman: https://linux4one.com/how-to-install-postman-in-linux/  
     
-    
+    * Mysql connector: https://stackoverflow.com/questions/32877671/importerror-no-module-named-mysql
     
 Setup github repository: #description
     1. git install: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git  
@@ -45,9 +45,28 @@ Database:
         password VARCHAR(255) not null, 
         date DATETIME,
         ip VARCHAR(255),
-        token VARCHAR (255)
+        tokenList longtext
     );
     DESCRIBE users; 
 
 
 mysql -h 34.67.158.25 -u frover -p
+
+shell script
+
+* Setup Cloud (Production Environment): 
+    * console - (dashboard) - compute engine - VM instances - Create instance (N1 recommended) - SSH 
+
+    * git: sudo apt install git-all 
+    * pip: sudo apt install python3-pip
+    * flask: pip3 install Flask
+    * jwt: pip3 install pyjwt
+    * mysql connector: pip3 install mysql-connector-python
+    * wget: sudo apt-get install wget
+    * mysql server: https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
+
+    * git clone https://github.com/Mellumynx/drive.git
+
+    * flask run
+
+    * shell script: http://linuxcommand.org/lc3_wss0010.php 
