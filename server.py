@@ -41,7 +41,7 @@ def register():
         confirmation = requestJson['Confirm']
 
         # connect to database "drive"
-        cnx = mysql.connector.connect(user="frover", password="frover", host="127.0.0.1", database="drive")
+        cnx = mysql.connector.connect(user="root", password="%asxz13579%", host="127.0.0.1", database="drive")
         cursor = cnx.cursor()
         # sql statement, select all users 
         query = "SELECT * FROM users;"

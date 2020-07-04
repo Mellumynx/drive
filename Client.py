@@ -119,16 +119,6 @@ def sync(token, dir):
             if not os.path.isfile(os.path.join(local_Folder, actionFile)) or run_cmp(os.path.join(local_Folder, actionFile), os.path.join(tmpdirname, actionFile)) != 0: 
                 shutil.copyfile(os.path.join(tmpdirname, actionFile), os.path.join(local_Folder, actionFile))
                 print("localfile updated: " + actionFile)
-            
-
-
-            # if run_cmp (local file not exist) = save
-            # local file exist (diff) = save
-            # local file exist (same) = dont save
-
-            #design document 大体描述 环境 1.5k
-            
-
 
 if __name__ == "__main__":
      main()
